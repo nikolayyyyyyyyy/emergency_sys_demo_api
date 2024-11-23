@@ -59,7 +59,7 @@ public class Message {
         this.region = region;
     }
 
-    public String getGpx_coordinates() {
+    public String getLocation() {
         return location;
     }
 

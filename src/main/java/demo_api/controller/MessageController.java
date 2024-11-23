@@ -24,7 +24,7 @@ public class MessageController {
         this.regionService = regionService;
     }
 
-    @GetMapping("{Id}")
+    @GetMapping("{id}")
     public Message getMessageDetails(@PathVariable("id")Long id){
         return this.messageService.getMessage(id) ;
     }
@@ -40,10 +40,20 @@ public class MessageController {
         return "Message created successfully!";
     }
 
-    @PutMapping
-    public String updateMessage(@RequestBody Message message){
-        this.messageService.updateMessage(message);
-        return "Message created successfully!";
+    @PutMapping("{id}")
+    public String updateMessage(@PathVariable("id")Long id
+            ,@RequestBody createMessageDTO message){
+        Message messageToUpdate = this.messageService.getMessage(id);
+        Category category = this.categoryService.getCategory(message.getCategoryId());
+        Region region = this.regionService.getRegion(message.getRegionId());
+
+        messageToUpdate.setLocation(message.getLocation());
+        messageToUpdate.setDescription(message.getDescription());
+        messageToUpdate.setRegion(region);
+        messageToUpdate.setCategory(category);
+
+        this.messageService.updateMessage(messageToUpdate);
+        return "Message updated successfully!";
     }
 
     @DeleteMapping("{id}")

@@ -30,6 +30,6 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public List<Region> getAllRegions() {
-        return List.of();
+        return this.regionService.findAll();
     }
 }
