@@ -1,8 +1,9 @@
 package demo_api.services.impl;
-
 import demo_api.models.Category;
 import demo_api.repositories.CategoryRepository;
 import demo_api.services.CategoryService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository){
         this.categoryRepository = categoryRepository;
@@ -31,4 +35,5 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> getAllCategories() {
         return this.categoryRepository.findAll();
     }
+
 }

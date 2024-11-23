@@ -5,6 +5,7 @@ import demo_api.models.Region;
 import demo_api.services.CategoryService;
 import demo_api.services.MessageService;
 import demo_api.services.RegionService;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 import demo_api.models.dto.*;
 import java.util.List;
@@ -15,6 +16,7 @@ public class MessageController {
     private final MessageService messageService;
     private final CategoryService categoryService;
     private final RegionService regionService;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     public MessageController(MessageService messageService,
                              CategoryService categoryService,
@@ -25,12 +27,13 @@ public class MessageController {
     }
 
     @GetMapping("{id}")
-    public Message getMessageDetails(@PathVariable("id")Long id){
-        return this.messageService.getMessage(id) ;
+    public GetMessageDTO getMessageDetails(@PathVariable("id")Long id){
+        return this.modelMapper
+                .map(this.messageService.getMessage(id),GetMessageDTO.class);
     }
 
     @PostMapping
-    public String createMessage(@RequestBody createMessageDTO message){
+    public String createMessage(@RequestBody CreateMessageDTO message){
         Category category = this.categoryService.getCategory(message.getCategoryId());
         Region region = this.regionService.getRegion(message.getRegionId());
 
@@ -42,7 +45,7 @@ public class MessageController {
 
     @PutMapping("{id}")
     public String updateMessage(@PathVariable("id")Long id
-            ,@RequestBody createMessageDTO message){
+            ,@RequestBody CreateMessageDTO message){
         Message messageToUpdate = this.messageService.getMessage(id);
         Category category = this.categoryService.getCategory(message.getCategoryId());
         Region region = this.regionService.getRegion(message.getRegionId());
@@ -63,7 +66,10 @@ public class MessageController {
     }
 
     @GetMapping
-    public List<Message> getAllMessages(){
-        return this.messageService.getAllMessages();
+    public List<GetMessageDTO> getAllMessages(){
+        return this.messageService.getAllMessages()
+                .stream()
+                .map(m -> modelMapper.map(m,GetMessageDTO.class))
+                .toList();
     }
 }

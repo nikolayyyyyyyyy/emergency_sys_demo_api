@@ -2,7 +2,9 @@ package demo_api.controller;
 
 import demo_api.models.Category;
 import demo_api.models.Region;
+import demo_api.models.dto.RegionDTO;
 import demo_api.services.RegionService;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 @RequestMapping("/regions")
 public class RegionController {
     private final RegionService regionService;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     public RegionController(RegionService regionService){
 
@@ -18,18 +21,25 @@ public class RegionController {
     }
 
     @GetMapping("{id}")
-    public Region getCategory(@PathVariable("id")Long id){
-        return this.regionService.getRegion(id);
+    public RegionDTO getRegion(@PathVariable("id")Long id){
+        return modelMapper.map(this.regionService.getRegion(id),RegionDTO.class);
     }
 
     @PostMapping
-    public String createCategory(@RequestBody Region category){
-        this.regionService.createRegion(category);
+    public String createRegion(@RequestBody RegionDTO region){
+        Region createdRegion = new Region();
+        createdRegion.setRegionPlace(region.getRegionPlace());
+
+        this.regionService.createRegion(createdRegion);
         return "Region created!";
     }
 
     @GetMapping
-    public List<Region> getAllCategories(){
-        return this.regionService.getAllRegions();
+    public List<RegionDTO> getAllRegions(){
+        return this.regionService
+                .getAllRegions()
+                .stream()
+                .map(r -> modelMapper.map(r,RegionDTO.class))
+                .toList();
     }
 }

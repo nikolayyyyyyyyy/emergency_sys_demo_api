@@ -1,6 +1,7 @@
 package demo_api.services;
 
 import demo_api.models.Category;
+import demo_api.models.dto.CategoryDTO;
 
 import java.util.List;
 
