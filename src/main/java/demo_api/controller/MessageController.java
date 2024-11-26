@@ -1,4 +1,7 @@
 package demo_api.controller;
+import demo_api.exception.CategoryNotFountException;
+import demo_api.exception.MessageNotFoundException;
+import demo_api.exception.RegionNotFoundException;
 import demo_api.models.Category;
 import demo_api.models.Message;
 import demo_api.models.Region;
@@ -16,26 +19,40 @@ public class MessageController {
     private final MessageService messageService;
     private final CategoryService categoryService;
     private final RegionService regionService;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     public MessageController(MessageService messageService,
                              CategoryService categoryService,
-                             RegionService regionService){
+                             RegionService regionService,
+                             ModelMapper modelMapper){
         this.messageService = messageService;
         this.categoryService = categoryService;
         this.regionService = regionService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("{id}")
     public GetMessageDTO getMessageDetails(@PathVariable("id")Long id){
+        Message message = this.messageService.getMessage(id);
+        if(message == null){
+            throw new MessageNotFoundException("Message does not exist in the database!");
+        }
+
         return this.modelMapper
-                .map(this.messageService.getMessage(id),GetMessageDTO.class);
+                .map(message,GetMessageDTO.class);
     }
 
     @PostMapping
-    public String createMessage(@RequestBody CreateMessageDTO message){
+    public String createMessage(@RequestBody MessageDTO message){
         Category category = this.categoryService.getCategory(message.getCategoryId());
+        if(category == null){
+            throw new CategoryNotFountException("Category does not exist in the database!");
+        }
+
         Region region = this.regionService.getRegion(message.getRegionId());
+        if(region == null){
+            throw new RegionNotFoundException("Region does not exist in the database!");
+        }
 
         Message createdMessage = new Message(category,region,message.getLocation(),message.getDescription());
         this.messageService.createMessage(createdMessage);
@@ -45,10 +62,21 @@ public class MessageController {
 
     @PutMapping("{id}")
     public String updateMessage(@PathVariable("id")Long id
-            ,@RequestBody CreateMessageDTO message){
+            ,@RequestBody MessageDTO message){
         Message messageToUpdate = this.messageService.getMessage(id);
+        if(messageToUpdate == null){
+            throw new MessageNotFoundException("Message does not exist in the database!");
+        }
+
         Category category = this.categoryService.getCategory(message.getCategoryId());
+        if(category == null){
+            throw new CategoryNotFountException("Category does not exist in the database!");
+        }
+
         Region region = this.regionService.getRegion(message.getRegionId());
+        if(region == null){
+            throw new RegionNotFoundException("Region does not exist in the database!");
+        }
 
         messageToUpdate.setLocation(message.getLocation());
         messageToUpdate.setDescription(message.getDescription());
@@ -61,13 +89,23 @@ public class MessageController {
 
     @DeleteMapping("{id}")
     public String deleteMessage(@PathVariable("id")Long id){
+        Message message = this.messageService.getMessage(id);
+        if(message == null){
+            throw new MessageNotFoundException("Message does not exist in the database!");
+        }
+
         this.messageService.deleteMessage(id);
         return "Message deleted successfully!";
     }
 
     @GetMapping
     public List<GetMessageDTO> getAllMessages(){
-        return this.messageService.getAllMessages()
+        List<Message> messages = this.messageService.getAllMessages();
+        if(messages == null){
+            throw new MessageNotFoundException("Message does not exist in the database!");
+        }
+
+        return messages
                 .stream()
                 .map(m -> modelMapper.map(m,GetMessageDTO.class))
                 .toList();

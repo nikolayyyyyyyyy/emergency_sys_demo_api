@@ -1,6 +1,6 @@
 package demo_api.models.dto;
 
-public class CreateMessageDTO {
+public class MessageDTO {
     private long categoryId;
     private long regionId;
     private String location;

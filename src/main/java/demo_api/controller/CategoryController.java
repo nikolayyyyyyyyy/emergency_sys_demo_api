@@ -1,5 +1,5 @@
 package demo_api.controller;
-
+import demo_api.exception.CategoryNotFountException;
 import demo_api.models.Category;
 import demo_api.models.dto.CategoryDTO;
 import demo_api.services.CategoryService;
@@ -12,31 +12,52 @@ import java.util.List;
 @RequestMapping("/categories")
 public class CategoryController{
     private final CategoryService categoryService;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
-    public CategoryController(CategoryService categoryService){
+    public CategoryController(CategoryService categoryService,
+                            ModelMapper modelMapper){
+
         this.categoryService = categoryService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("{id}")
     public CategoryDTO getCategory(@PathVariable("id")Long id){
+        Category category = this.categoryService.getCategory(id);
+        if(category == null){
+            throw new CategoryNotFountException("Category does not exist in the database!");
+        }
+
         return modelMapper.map(this.categoryService.getCategory(id),CategoryDTO.class);
     }
 
     @PostMapping
     public String createCategory(@RequestBody CategoryDTO category){
-        Category createdCategory = new Category();
-        createdCategory.setCategoryType(category.getCategoryType());
-
-        this.categoryService.createCategory(createdCategory);
+        this.categoryService.createCategory(this.modelMapper.map(category,Category.class));
         return "Category created!";
     }
 
     @GetMapping
     public List<CategoryDTO> getAllCategories(){
+        List<Category> categories = this.categoryService.getAllCategories();
+        if(categories == null){
+            throw new CategoryNotFountException("Category does not exist in the database!");
+        }
+
         return this.categoryService
                 .getAllCategories()
                 .stream()
                 .map(c -> modelMapper.map(c,CategoryDTO.class)).toList();
+    }
+
+    @DeleteMapping("{id}")
+    public String deleteCategory(@PathVariable(name = "id")long id){
+        Category category = this.categoryService.getCategory(id);
+        if(category == null){
+            throw new CategoryNotFountException("Category does not exist in the database!");
+        }
+
+        this.categoryService.deleteCategory(id);
+        return "Category deleted successfully!";
     }
 }

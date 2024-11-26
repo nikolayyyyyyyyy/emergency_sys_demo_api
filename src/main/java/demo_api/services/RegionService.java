@@ -9,4 +9,5 @@ public interface RegionService {
     public void createRegion(Region region);
     public Region getRegion(Long id);
     public List<Region> getAllRegions();
+    public void deleteRegion(long id);
 }

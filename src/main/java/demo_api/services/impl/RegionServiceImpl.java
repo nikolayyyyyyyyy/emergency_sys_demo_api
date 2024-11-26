@@ -32,4 +32,9 @@ public class RegionServiceImpl implements RegionService {
     public List<Region> getAllRegions() {
         return this.regionService.findAll();
     }
+
+    @Override
+    public void deleteRegion(long id) {
+        this.regionService.deleteById(id);
+    }
 }

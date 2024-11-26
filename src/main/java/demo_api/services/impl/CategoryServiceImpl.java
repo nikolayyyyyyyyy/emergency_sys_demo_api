@@ -36,4 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
         return this.categoryRepository.findAll();
     }
 
+    @Override
+    public void deleteCategory(long id) {
+        this.categoryRepository.deleteById(id);
+    }
+
 }
