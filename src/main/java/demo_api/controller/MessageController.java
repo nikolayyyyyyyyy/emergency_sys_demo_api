@@ -1,7 +1,5 @@
 package demo_api.controller;
-import demo_api.exception.CategoryNotFountException;
-import demo_api.exception.MessageNotFoundException;
-import demo_api.exception.RegionNotFoundException;
+import demo_api.exception.EntityNotFoundException;
 import demo_api.models.Category;
 import demo_api.models.Message;
 import demo_api.models.Region;
@@ -35,7 +33,7 @@ public class MessageController {
     public GetMessageDTO getMessageDetails(@PathVariable("id")Long id){
         Message message = this.messageService.getMessage(id);
         if(message == null){
-            throw new MessageNotFoundException("Message does not exist in the database!");
+            throw new EntityNotFoundException("Message does not exist in the database!");
         }
 
         return this.modelMapper
@@ -46,12 +44,12 @@ public class MessageController {
     public String createMessage(@RequestBody MessageDTO message){
         Category category = this.categoryService.getCategory(message.getCategoryId());
         if(category == null){
-            throw new CategoryNotFountException("Category does not exist in the database!");
+            throw new EntityNotFoundException("Category does not exist in the database!");
         }
 
         Region region = this.regionService.getRegion(message.getRegionId());
         if(region == null){
-            throw new RegionNotFoundException("Region does not exist in the database!");
+            throw new EntityNotFoundException("Region does not exist in the database!");
         }
 
         Message createdMessage = new Message(category,region,message.getLocation(),message.getDescription());
@@ -65,17 +63,17 @@ public class MessageController {
             ,@RequestBody MessageDTO message){
         Message messageToUpdate = this.messageService.getMessage(id);
         if(messageToUpdate == null){
-            throw new MessageNotFoundException("Message does not exist in the database!");
+            throw new EntityNotFoundException("Message does not exist in the database!");
         }
 
         Category category = this.categoryService.getCategory(message.getCategoryId());
         if(category == null){
-            throw new CategoryNotFountException("Category does not exist in the database!");
+            throw new EntityNotFoundException("Category does not exist in the database!");
         }
 
         Region region = this.regionService.getRegion(message.getRegionId());
         if(region == null){
-            throw new RegionNotFoundException("Region does not exist in the database!");
+            throw new EntityNotFoundException("Region does not exist in the database!");
         }
 
         messageToUpdate.setLocation(message.getLocation());
@@ -91,7 +89,7 @@ public class MessageController {
     public String deleteMessage(@PathVariable("id")Long id){
         Message message = this.messageService.getMessage(id);
         if(message == null){
-            throw new MessageNotFoundException("Message does not exist in the database!");
+            throw new EntityNotFoundException("Message does not exist in the database!");
         }
 
         this.messageService.deleteMessage(id);
@@ -102,7 +100,7 @@ public class MessageController {
     public List<GetMessageDTO> getAllMessages(){
         List<Message> messages = this.messageService.getAllMessages();
         if(messages == null){
-            throw new MessageNotFoundException("Message does not exist in the database!");
+            throw new EntityNotFoundException("Message does not exist in the database!");
         }
 
         return messages

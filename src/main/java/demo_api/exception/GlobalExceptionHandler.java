@@ -8,18 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CategoryNotFountException.class)
-    public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFountException categoryNotFountException){
-        return new ResponseEntity<>(categoryNotFountException.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException entityNotFoundException){
+        return new ResponseEntity<>(entityNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(RegionNotFoundException.class)
-    public ResponseEntity<String> handlerRegionNotFoundException(RegionNotFoundException regionNotFoundException){
-        return new ResponseEntity<>(regionNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(MessageNotFoundException.class)
-    public ResponseEntity<String> handlerMessageNotFoundException(MessageNotFoundException messageNotFoundException){
-        return new ResponseEntity<>(messageNotFoundException.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(EntityAlreadyAddedInDatabase.class)
+    public ResponseEntity<String> handlerRegionNotFoundException(EntityAlreadyAddedInDatabase entityAlreadyAddedInDatabase){
+        return new ResponseEntity<>(entityAlreadyAddedInDatabase.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

@@ -1,5 +1,6 @@
 package demo_api.services.impl;
 import demo_api.models.Category;
+import demo_api.models.enums.CategoryType;
 import demo_api.repositories.CategoryRepository;
 import demo_api.services.CategoryService;
 import org.modelmapper.ModelMapper;
@@ -39,6 +40,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(long id) {
         this.categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean hasCategory(CategoryType categoryType) {
+        return this.categoryRepository.findByCategoryType(categoryType) != null;
+
     }
 
 }

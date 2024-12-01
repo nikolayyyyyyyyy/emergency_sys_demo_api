@@ -1,6 +1,7 @@
 package demo_api.services.impl;
 
 import demo_api.models.Region;
+import demo_api.models.enums.RegionPlace;
 import demo_api.repositories.RegionRepository;
 import demo_api.services.RegionService;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,10 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public void deleteRegion(long id) {
         this.regionService.deleteById(id);
+    }
+
+    @Override
+    public boolean hasRegion(RegionPlace regionPlace) {
+        return this.regionService.findByRegionPlace(regionPlace) != null;
     }
 }

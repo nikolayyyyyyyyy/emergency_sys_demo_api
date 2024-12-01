@@ -1,5 +1,6 @@
 package demo_api.controller;
-import demo_api.exception.CategoryNotFountException;
+import demo_api.exception.EntityAlreadyAddedInDatabase;
+import demo_api.exception.EntityNotFoundException;
 import demo_api.models.Category;
 import demo_api.models.dto.CategoryDTO;
 import demo_api.services.CategoryService;
@@ -25,7 +26,7 @@ public class CategoryController{
     public CategoryDTO getCategory(@PathVariable("id")Long id){
         Category category = this.categoryService.getCategory(id);
         if(category == null){
-            throw new CategoryNotFountException("Category does not exist in the database!");
+            throw new EntityNotFoundException("Category does not exist in the database!");
         }
 
         return modelMapper.map(this.categoryService.getCategory(id),CategoryDTO.class);
@@ -33,6 +34,10 @@ public class CategoryController{
 
     @PostMapping
     public String createCategory(@RequestBody CategoryDTO category){
+        if(this.categoryService.hasCategory(category.getCategoryType())){
+
+            throw new EntityAlreadyAddedInDatabase("Category already added!");
+        }
         this.categoryService.createCategory(this.modelMapper.map(category,Category.class));
         return "Category created!";
     }
@@ -41,7 +46,7 @@ public class CategoryController{
     public List<CategoryDTO> getAllCategories(){
         List<Category> categories = this.categoryService.getAllCategories();
         if(categories == null){
-            throw new CategoryNotFountException("Category does not exist in the database!");
+            throw new EntityNotFoundException("Category table is empty!");
         }
 
         return this.categoryService
@@ -54,7 +59,7 @@ public class CategoryController{
     public String deleteCategory(@PathVariable(name = "id")long id){
         Category category = this.categoryService.getCategory(id);
         if(category == null){
-            throw new CategoryNotFountException("Category does not exist in the database!");
+            throw new EntityNotFoundException("Category does not exist in the database!");
         }
 
         this.categoryService.deleteCategory(id);
